@@ -21,8 +21,9 @@ public class GlobalExceptionHandler {
     ErrorCode errorCode = e.getErrorCode();
     log.warn("CustomException: {}", errorCode.name());
 
-    return ResponseEntity.status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getStatus().value(), errorCode.getMessage()));
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ApiResponse.error(errorCode.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,24 +32,34 @@ public class GlobalExceptionHandler {
 
     ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
-    Map<String, String> errors = e.getBindingResult().getFieldErrors().stream()
-        .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage,
-            (a, b) -> a + ", " + b, LinkedHashMap::new));
+    Map<String, String> errors = e.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .collect(Collectors.toMap(
+            FieldError::getField,
+            FieldError::getDefaultMessage,
+            (a, b) -> a + ", " + b,
+            LinkedHashMap::new
+        ));
 
-    e.getBindingResult().getFieldErrors()
+    e.getBindingResult()
+        .getFieldErrors()
         .forEach(f -> log.warn("{}: {}", f.getField(), f.getDefaultMessage()));
 
-    return ResponseEntity.status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getStatus().value(), errorCode.getMessage(), errors));
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ApiResponse.error(errorCode.getMessage(), errors));
   }
 
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
 
     ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+
     log.error("Unhandled exception", e);
 
-    return ResponseEntity.status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getStatus().value(), errorCode.getMessage()));
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ApiResponse.error(errorCode.getMessage()));
   }
 }
