@@ -23,10 +23,8 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public void verifyUsername(String username) {
-    if (userRepository.existsByUsername(username)) {
-      throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
-    }
+  public boolean existsByUsername(String username) {
+    return userRepository.existsByUsername(username);
   }
 
   @Transactional

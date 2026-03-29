@@ -1,7 +1,6 @@
 package com.pawpawlog.user.repository;
 
 import com.pawpawlog.user.entity.User;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -9,6 +8,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
   boolean existsByUsername(String username);
 
   boolean existsByNicknameAndTag(String nickname, String tag);
-
-  Optional<User> findByUsername(String username);
 }
