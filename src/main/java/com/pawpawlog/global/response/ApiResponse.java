@@ -1,40 +1,39 @@
 package com.pawpawlog.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"success", "code", "message", "data"})
 public class ApiResponse<T> {
 
   private final boolean success;
+  private final String code;
   private final String message;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
   private final T data;
 
-  public static ApiResponse<Void> ok() {
-    return new ApiResponse<>(true, "요청이 성공적으로 처리되었습니다.", null);
+  private ApiResponse(boolean success, String code, String message, T data) {
+    this.success = success;
+    this.code = code;
+    this.message = message;
+    this.data = data;
   }
 
-  public static <T> ApiResponse<T> ok(T data) {
-    return new ApiResponse<>(true, "요청이 성공적으로 처리되었습니다.", data);
+  public static <T> ApiResponse<T> success(T data) {
+    return new ApiResponse<>(true, null, null, data);
   }
 
-  public static ApiResponse<Void> ok(String message) {
-    return new ApiResponse<>(true, message, null);
+  public static ApiResponse<Void> success() {
+    return new ApiResponse<>(true, null, null, null);
   }
 
-  public static <T> ApiResponse<T> ok(String message, T data) {
-    return new ApiResponse<>(true, message, data);
+  public static ApiResponse<Void> error(String code, String message) {
+    return new ApiResponse<>(false, code, message, null);
   }
 
-  public static ApiResponse<Void> error(String message) {
-    return new ApiResponse<>(false, message, null);
-  }
-
-  public static <T> ApiResponse<T> error(String message, T data) {
-    return new ApiResponse<>(false, message, data);
+  public static <T> ApiResponse<T> error(String code, String message, T data) {
+    return new ApiResponse<>(false, code, message, data);
   }
 }

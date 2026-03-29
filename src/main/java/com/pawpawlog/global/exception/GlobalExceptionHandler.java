@@ -23,7 +23,10 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getMessage()));
+        .body(ApiResponse.error(
+            errorCode.name(),
+            errorCode.getMessage()
+        ));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -48,7 +51,11 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getMessage(), errors));
+        .body(ApiResponse.error(
+            errorCode.name(),
+            errorCode.getMessage(),
+            errors
+        ));
   }
 
   @ExceptionHandler(Exception.class)
@@ -60,6 +67,9 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.getMessage()));
+        .body(ApiResponse.error(
+            errorCode.name(),
+            errorCode.getMessage()
+        ));
   }
 }
