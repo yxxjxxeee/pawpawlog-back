@@ -41,7 +41,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
       default -> throw new OAuth2AuthenticationException(
           new OAuth2Error(
               "unsupported_provider",
-              "지원하지 않는 소셜 로그인 제공자입니다: " + registrationId,
+              "지원하지 않는 소셜 로그인 제공자: " + registrationId,
               null));
     };
   }
