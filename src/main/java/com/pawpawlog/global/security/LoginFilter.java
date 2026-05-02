@@ -2,8 +2,8 @@ package com.pawpawlog.global.security;
 
 import com.pawpawlog.auth.dto.request.LoginRequest;
 import com.pawpawlog.auth.dto.response.TokenResponse;
+import com.pawpawlog.auth.service.AuthService;
 import com.pawpawlog.global.exception.ErrorCode;
-import com.pawpawlog.global.jwt.JwtTokenProvider;
 import com.pawpawlog.global.util.HttpResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,15 +23,15 @@ import tools.jackson.databind.ObjectMapper;
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final AuthService authService;
   private final ObjectMapper objectMapper;
 
   public LoginFilter(
       AuthenticationManager authenticationManager,
-      JwtTokenProvider jwtTokenProvider,
+      AuthService authService,
       ObjectMapper objectMapper) {
     super(authenticationManager);
-    this.jwtTokenProvider = jwtTokenProvider;
+    this.authService = authService;
     this.objectMapper = objectMapper;
     setFilterProcessesUrl("/auth/login");
   }
@@ -67,9 +67,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
     log.debug("로그인 성공: {}", userDetails.getUserId());
 
-    TokenResponse tokenResponse = TokenResponse.from(
-        jwtTokenProvider.generateToken(authResult));
-
+    TokenResponse tokenResponse = authService.issueTokenForAuth(authResult);
     HttpResponseUtil.writeSuccessResponse(response, HttpStatus.OK, tokenResponse, objectMapper);
   }
 

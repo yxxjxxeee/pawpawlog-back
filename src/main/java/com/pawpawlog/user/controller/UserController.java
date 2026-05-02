@@ -22,13 +22,13 @@ public class UserController {
 
   private final UserService userService;
 
-  @GetMapping("/usernames/{username}/exists")
+  @GetMapping("/usernames/{username}")
   public ResponseEntity<ApiResponse<Boolean>> checkUsernameExists(@PathVariable String username) {
     boolean exists = userService.existsByUsername(username);
     return ResponseEntity.ok(ApiResponse.success(exists));
   }
 
-  @PostMapping("/signup")
+  @PostMapping
   public ResponseEntity<ApiResponse<UserResponse>> signUp(
       @RequestBody @Valid SignUpRequest request) {
     UserResponse response = userService.signUp(request);

@@ -1,4 +1,4 @@
-package com.pawpawlog.global.health;
+package com.pawpawlog.global.health.controller;
 
 import com.pawpawlog.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
