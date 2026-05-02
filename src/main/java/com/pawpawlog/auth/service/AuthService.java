@@ -1,37 +1,58 @@
 package com.pawpawlog.auth.service;
 
-import com.pawpawlog.auth.dto.request.ReissueRequest;
 import com.pawpawlog.auth.dto.response.TokenResponse;
 import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
+import com.pawpawlog.global.jwt.JwtToken;
 import com.pawpawlog.global.jwt.JwtTokenProvider;
 import com.pawpawlog.global.redis.RedisDao;
+import com.pawpawlog.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-  private static final String BEARER_PREFIX = "Bearer ";
+  @Value("${jwt.refresh-expiration}")
+  private long refreshExpiration;
+
   private final JwtTokenProvider jwtTokenProvider;
   private final RedisDao redisDao;
 
-  public TokenResponse reissue(ReissueRequest request) {
-    String id = jwtTokenProvider.validateRefreshTokenAndGetId(request.refreshToken());
-
-    redisDao.deleteRefreshToken(id);
-
-    return TokenResponse.from(jwtTokenProvider.reissueToken(id));
+  public TokenResponse issueTokenForAuth(Authentication authentication) {
+    JwtToken tokenPair = jwtTokenProvider.generateToken(authentication);
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    redisDao.saveRefreshToken(String.valueOf(userDetails.getUserId()), tokenPair.refreshToken(), refreshExpiration);
+    return TokenResponse.from(tokenPair);
   }
 
-  public void logout(String bearerToken) {
-    if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_PREFIX)) {
+  public TokenResponse issueTokenForUser(String userId) {
+    JwtToken tokenPair = jwtTokenProvider.reissueToken(userId);
+    redisDao.saveRefreshToken(userId, tokenPair.refreshToken(), refreshExpiration);
+    return TokenResponse.from(tokenPair);
+  }
+
+  public TokenResponse reissue(String refreshToken) {
+    String id = jwtTokenProvider.validateRefreshTokenAndGetId(refreshToken);
+
+    String savedToken = redisDao.getRefreshToken(id);
+    if (savedToken == null) {
+      throw new CustomException(ErrorCode.MISSING_TOKEN);
+    }
+    if (!refreshToken.equals(savedToken)) {
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
 
-    String accessToken = bearerToken.substring(BEARER_PREFIX.length());
+    redisDao.deleteRefreshToken(id);
+    JwtToken tokenPair = jwtTokenProvider.reissueToken(id);
+    redisDao.saveRefreshToken(id, tokenPair.refreshToken(), refreshExpiration);
+    return TokenResponse.from(tokenPair);
+  }
+
+  public void logout(String accessToken) {
     jwtTokenProvider.validateTokenIgnoreExpiry(accessToken);
 
     String id = jwtTokenProvider.getIdFromToken(accessToken);

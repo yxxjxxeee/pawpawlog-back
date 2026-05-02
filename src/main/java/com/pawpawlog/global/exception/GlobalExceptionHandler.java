@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,6 +29,15 @@ public class GlobalExceptionHandler {
             errorCode.name(),
             errorCode.getMessage()
         ));
+  }
+
+  @ExceptionHandler(MissingRequestHeaderException.class)
+  protected ResponseEntity<ApiResponse<Void>> handleMissingHeader(MissingRequestHeaderException e) {
+    ErrorCode errorCode = ErrorCode.INVALID_INPUT;
+    log.warn("필수 헤더 누락: {}", e.getHeaderName());
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ApiResponse.error(errorCode.name(), e.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -56,6 +67,15 @@ public class GlobalExceptionHandler {
             errorCode.getMessage(),
             errors
         ));
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  protected ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+    ErrorCode errorCode = ErrorCode.NOT_FOUND;
+    log.warn("NoResourceFoundException: {}", e.getMessage());
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ApiResponse.error(errorCode.name(), errorCode.getMessage()));
   }
 
   @ExceptionHandler(Exception.class)

@@ -4,8 +4,10 @@ import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
 import com.pawpawlog.user.dto.request.SignUpRequest;
 import com.pawpawlog.user.dto.response.UserResponse;
+import com.pawpawlog.user.entity.Provider;
 import com.pawpawlog.user.entity.User;
 import com.pawpawlog.user.repository.UserRepository;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,10 @@ public class UserService {
     return userRepository.existsByUsername(username);
   }
 
+  public Optional<User> findByProviderAndProviderId(Provider provider, String providerId) {
+    return userRepository.findByProviderAndProviderId(provider, providerId);
+  }
+
   @Transactional
   public UserResponse signUp(SignUpRequest request) {
     if (userRepository.existsByUsername(request.username())) {
@@ -43,6 +49,19 @@ public class UserService {
         .build();
 
     return UserResponse.from(userRepository.save(user));
+  }
+
+  @Transactional
+  public User registerOAuth2User(String nickname, Provider provider, String providerId,
+      String profileImageUrl) {
+    String tag = generateUniqueTag(nickname);
+    return userRepository.save(User.builder()
+        .nickname(nickname)
+        .tag(tag)
+        .provider(provider)
+        .providerId(providerId)
+        .profileImageUrl(profileImageUrl)
+        .build());
   }
 
   private String generateUniqueTag(String nickname) {

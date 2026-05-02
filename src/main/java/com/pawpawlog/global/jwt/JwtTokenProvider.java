@@ -2,7 +2,6 @@ package com.pawpawlog.global.jwt;
 
 import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
-import com.pawpawlog.global.redis.RedisDao;
 import com.pawpawlog.global.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -46,7 +45,6 @@ public class JwtTokenProvider {
   private Key key;
 
   private final UserDetailsService userDetailsService;
-  private final RedisDao redisDao;
 
   @PostConstruct
   public void init() {
@@ -58,14 +56,12 @@ public class JwtTokenProvider {
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
     String id = String.valueOf(userDetails.getUserId());
     String authorities = extractAuthorities(authentication.getAuthorities());
-
     return createTokenPair(id, authorities);
   }
 
   public JwtToken reissueToken(String id) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(id);
     String authorities = extractAuthorities(userDetails.getAuthorities());
-
     return createTokenPair(id, authorities);
   }
 
@@ -82,7 +78,8 @@ public class JwtTokenProvider {
         .map(SimpleGrantedAuthority::new)
         .toList();
 
-    UserDetails principal = userDetailsService.loadUserByUsername(claims.getSubject());
+    Long userId = Long.parseLong(claims.getSubject());
+    UserDetails principal = CustomUserDetails.fromClaims(userId, authorities);
     return new UsernamePasswordAuthenticationToken(principal, "", authorities);
   }
 
@@ -110,27 +107,14 @@ public class JwtTokenProvider {
   }
 
   public String validateRefreshTokenAndGetId(String token) {
-    Claims claims;
     try {
-      claims = Jwts.parserBuilder().setSigningKey(key).build()
-          .parseClaimsJws(token).getBody();
+      return Jwts.parserBuilder().setSigningKey(key).build()
+          .parseClaimsJws(token).getBody().getSubject();
     } catch (ExpiredJwtException e) {
       throw new CustomException(ErrorCode.EXPIRED_TOKEN);
     } catch (JwtException | IllegalArgumentException e) {
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
-
-    String id = claims.getSubject();
-    String savedToken = redisDao.getRefreshToken(id);
-
-    if (savedToken == null) {
-      throw new CustomException(ErrorCode.MISSING_TOKEN);
-    }
-    if (!token.equals(savedToken)) {
-      throw new CustomException(ErrorCode.INVALID_TOKEN);
-    }
-
-    return id;
   }
 
   public String getIdFromToken(String token) {
@@ -152,14 +136,10 @@ public class JwtTokenProvider {
     }
   }
 
-
   private JwtToken createTokenPair(String id, String authorities) {
     long now = System.currentTimeMillis();
     String accessToken = generateAccessToken(id, authorities, new Date(now + accessExpiration));
     String refreshToken = generateRefreshToken(id, new Date(now + refreshExpiration));
-
-    redisDao.saveRefreshToken(id, refreshToken, refreshExpiration);
-
     return JwtToken.of(accessToken, refreshToken);
   }
 
