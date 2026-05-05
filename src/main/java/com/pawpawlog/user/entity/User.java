@@ -1,17 +1,13 @@
 package com.pawpawlog.user.entity;
 
 import com.pawpawlog.global.domain.BaseEntity;
-import com.pawpawlog.pet.entity.Pet;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
@@ -66,10 +62,6 @@ public class User extends BaseEntity {
   @Builder.Default
   private UserRole role = UserRole.USER;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "current_pet_id")
-  private Pet currentPet;
-
   public void suspend() {
     this.status = UserStatus.SUSPENDED;
   }
@@ -88,10 +80,6 @@ public class User extends BaseEntity {
 
   public void updateProfileImage(String profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
-  }
-
-  public void updateCurrentPet(Pet pet) {
-    this.currentPet = pet;
   }
 
   // equals & hashCode
