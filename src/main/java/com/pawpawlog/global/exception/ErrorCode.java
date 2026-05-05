@@ -10,8 +10,6 @@ public enum ErrorCode {
   // User
   DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다."),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
-  INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
-  TAG_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "태그 생성에 실패했습니다."),
 
   // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),

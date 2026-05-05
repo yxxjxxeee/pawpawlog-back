@@ -8,7 +8,6 @@ public record UserResponse(
     Long id,
     String username,
     String nickname,
-    String tag,
     String profileImageUrl
 ) {
 
@@ -17,7 +16,6 @@ public record UserResponse(
         user.getId(),
         user.getUsername(),
         user.getNickname(),
-        user.getTag(),
         user.getProfileImageUrl()
     );
   }

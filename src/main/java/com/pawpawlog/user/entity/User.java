@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 @Table(
     name = "users",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"nickname", "tag"}),
         @UniqueConstraint(columnNames = {"provider", "provider_id"})
     }
 )
@@ -46,9 +45,6 @@ public class User extends BaseEntity {
 
   @Column(nullable = false, length = 30)
   private String nickname;
-
-  @Column(nullable = false, length = 4)
-  private String tag;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 10)
