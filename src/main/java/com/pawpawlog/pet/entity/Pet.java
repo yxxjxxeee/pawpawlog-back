@@ -45,11 +45,19 @@ public class Pet extends BaseEntity {
 
   private LocalDate birthDate;
 
+  @Column(nullable = false)
+  @Builder.Default
+  private boolean isCurrent = false;
+
   public void updateName(String name) {
     this.name = name;
   }
 
   public void updateBirthDate(LocalDate birthDate) {
     this.birthDate = birthDate;
+  }
+
+  public void setCurrent(boolean isCurrent) {
+    this.isCurrent = isCurrent;
   }
 }
