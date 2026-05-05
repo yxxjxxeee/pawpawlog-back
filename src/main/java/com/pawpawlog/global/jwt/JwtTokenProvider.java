@@ -59,7 +59,7 @@ public class JwtTokenProvider {
     return createTokenPair(id, authorities);
   }
 
-  public JwtToken reissueToken(String id) {
+  public JwtToken generateTokenForUserId(String id) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(id);
     String authorities = extractAuthorities(userDetails.getAuthorities());
     return createTokenPair(id, authorities);

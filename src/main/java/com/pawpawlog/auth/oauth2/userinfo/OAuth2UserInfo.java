@@ -10,5 +10,10 @@ public interface OAuth2UserInfo {
 
   String getNickname();
 
+  default String getNicknameOrDefault() {
+    String nickname = getNickname();
+    return (nickname != null && !nickname.isBlank()) ? nickname : "사용자";
+  }
+
   String getProfileImageUrl();
 }

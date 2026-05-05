@@ -30,7 +30,7 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
 
   @Override
   public String getNickname() {
-    return (String) profile.getOrDefault("nickname", "사용자");
+    return (String) profile.get("nickname");
   }
 
   @Override

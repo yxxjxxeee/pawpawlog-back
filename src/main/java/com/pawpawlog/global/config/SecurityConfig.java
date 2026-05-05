@@ -73,9 +73,11 @@ public class SecurityConfig {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth ->
             auth
-                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/reissue", "/auth/logout", "/users").permitAll()
+                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/reissue", "/auth/logout",
+                    "/users").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users/usernames/*", "/health").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**",
+                    "/login/oauth2/**").permitAll()
                 .anyRequest().authenticated())
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint(authenticationEntryPoint)

@@ -1,6 +1,7 @@
 package com.pawpawlog.auth.oauth2;
 
 import com.pawpawlog.auth.oauth2.userinfo.KakaoOAuth2UserInfo;
+import com.pawpawlog.auth.oauth2.userinfo.NaverOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.OAuth2UserInfo;
 import com.pawpawlog.user.entity.User;
 import com.pawpawlog.user.service.UserService;
@@ -38,6 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   private OAuth2UserInfo resolveUserInfo(String registrationId, Map<String, Object> attributes) {
     return switch (registrationId) {
       case "kakao" -> new KakaoOAuth2UserInfo(attributes);
+      case "naver" -> new NaverOAuth2UserInfo(attributes);
       default -> throw new OAuth2AuthenticationException(
           new OAuth2Error(
               "unsupported_provider",
@@ -59,7 +61,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     log.debug("신규 OAuth2 유저 생성 - provider: {}, providerId: {}",
         userInfo.getProvider(), userInfo.getProviderId());
     return userService.registerOAuth2User(
-        userInfo.getNickname(),
+        userInfo.getNicknameOrDefault(),
         userInfo.getProvider(),
         userInfo.getProviderId(),
         userInfo.getProfileImageUrl()
