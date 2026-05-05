@@ -30,7 +30,7 @@ public class AuthService {
   }
 
   public TokenResponse issueTokenForUser(String userId) {
-    JwtToken tokenPair = jwtTokenProvider.reissueToken(userId);
+    JwtToken tokenPair = jwtTokenProvider.generateTokenForUserId(userId);
     redisDao.saveRefreshToken(userId, tokenPair.refreshToken(), refreshExpiration);
     return TokenResponse.from(tokenPair);
   }
@@ -47,7 +47,7 @@ public class AuthService {
     }
 
     redisDao.deleteRefreshToken(id);
-    JwtToken tokenPair = jwtTokenProvider.reissueToken(id);
+    JwtToken tokenPair = jwtTokenProvider.generateTokenForUserId(id);
     redisDao.saveRefreshToken(id, tokenPair.refreshToken(), refreshExpiration);
     return TokenResponse.from(tokenPair);
   }
