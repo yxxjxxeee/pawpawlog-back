@@ -57,11 +57,7 @@ public class Pet extends BaseEntity {
     this.birthDate = birthDate;
   }
 
-  public void designateAsCurrent() {
-    this.isCurrent = true;
-  }
-
-  public void undesignateAsCurrent() {
-    this.isCurrent = false;
+  public void setCurrent(boolean isCurrent) {
+    this.isCurrent = isCurrent;
   }
 }
