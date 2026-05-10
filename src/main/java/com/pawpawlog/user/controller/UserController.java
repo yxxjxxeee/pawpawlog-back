@@ -1,6 +1,7 @@
 package com.pawpawlog.user.controller;
 
 import com.pawpawlog.user.dto.request.SignUpRequest;
+import com.pawpawlog.user.dto.response.UsernameAvailabilityResponse;
 import com.pawpawlog.user.dto.response.UserResponse;
 import com.pawpawlog.user.service.UserService;
 import jakarta.validation.Valid;
@@ -22,8 +23,9 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/usernames/{username}")
-  public ResponseEntity<Boolean> checkUsernameExists(@PathVariable String username) {
-    return ResponseEntity.ok(userService.existsByUsername(username));
+  public ResponseEntity<UsernameAvailabilityResponse> checkUsernameAvailability(
+      @PathVariable String username) {
+    return ResponseEntity.ok(UsernameAvailabilityResponse.from(userService.existsByUsername(username)));
   }
 
   @PostMapping
