@@ -1,7 +1,7 @@
 package com.pawpawlog.global.util;
 
 import com.pawpawlog.global.exception.ErrorCode;
-import com.pawpawlog.global.response.ApiResponse;
+import com.pawpawlog.global.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.AccessLevel;
@@ -18,7 +18,7 @@ public class HttpResponseUtil {
     response.setStatus(status.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("UTF-8");
-    response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.success(data)));
+    response.getWriter().write(objectMapper.writeValueAsString(data));
   }
 
   public static void writeErrorResponse(HttpServletResponse response, ErrorCode errorCode,
@@ -28,6 +28,6 @@ public class HttpResponseUtil {
     response.setCharacterEncoding("UTF-8");
     response.getWriter()
         .write(objectMapper.writeValueAsString(
-            ApiResponse.error(errorCode.name(), errorCode.getMessage())));
+            ErrorResponse.error(errorCode.name(), errorCode.getMessage())));
   }
 }

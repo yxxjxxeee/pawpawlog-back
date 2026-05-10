@@ -1,6 +1,6 @@
 package com.pawpawlog.global.exception;
 
-import com.pawpawlog.global.response.ApiResponse;
+import com.pawpawlog.global.response.ErrorResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,32 +18,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(CustomException.class)
-  protected ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
-
+  protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
     ErrorCode errorCode = e.getErrorCode();
     log.warn("CustomException: {}", errorCode.name());
-
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(
-            errorCode.name(),
-            errorCode.getMessage()
-        ));
+        .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage()));
   }
 
   @ExceptionHandler(MissingRequestHeaderException.class)
-  protected ResponseEntity<ApiResponse<Void>> handleMissingHeader(MissingRequestHeaderException e) {
+  protected ResponseEntity<ErrorResponse> handleMissingHeader(MissingRequestHeaderException e) {
     ErrorCode errorCode = ErrorCode.INVALID_INPUT;
     log.warn("필수 헤더 누락: {}", e.getHeaderName());
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.name(), e.getMessage()));
+        .body(ErrorResponse.error(errorCode.name(), e.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  protected ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
-      MethodArgumentNotValidException e) {
-
+  protected ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
     ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
     Map<String, String> errors = e.getBindingResult()
@@ -62,34 +55,24 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(
-            errorCode.name(),
-            errorCode.getMessage(),
-            errors
-        ));
+        .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage(), errors));
   }
 
   @ExceptionHandler(NoResourceFoundException.class)
-  protected ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+  protected ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
     ErrorCode errorCode = ErrorCode.NOT_FOUND;
     log.warn("NoResourceFoundException: {}", e.getMessage());
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(errorCode.name(), errorCode.getMessage()));
+        .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage()));
   }
 
   @ExceptionHandler(Exception.class)
-  protected ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-
+  protected ResponseEntity<ErrorResponse> handleException(Exception e) {
     ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-
     log.error("Unhandled exception", e);
-
     return ResponseEntity
         .status(errorCode.getStatus())
-        .body(ApiResponse.error(
-            errorCode.name(),
-            errorCode.getMessage()
-        ));
+        .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage()));
   }
 }

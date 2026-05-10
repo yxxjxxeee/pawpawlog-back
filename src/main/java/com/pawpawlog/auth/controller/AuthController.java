@@ -4,7 +4,6 @@ import com.pawpawlog.auth.dto.response.TokenResponse;
 import com.pawpawlog.auth.service.AuthService;
 import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
-import com.pawpawlog.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -23,17 +22,16 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/reissue")
-  public ResponseEntity<ApiResponse<TokenResponse>> reissue(
+  public ResponseEntity<TokenResponse> reissue(
       @RequestHeader(value = "Authorization", required = false) String bearerToken) {
-    TokenResponse tokenResponse = authService.reissue(extractToken(bearerToken));
-    return ResponseEntity.ok(ApiResponse.success(tokenResponse));
+    return ResponseEntity.ok(authService.reissue(extractToken(bearerToken)));
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<ApiResponse<Void>> logout(
+  public ResponseEntity<Void> logout(
       @RequestHeader(value = "Authorization", required = false) String bearerToken) {
     authService.logout(extractToken(bearerToken));
-    return ResponseEntity.ok(ApiResponse.success());
+    return ResponseEntity.noContent().build();
   }
 
   private String extractToken(String bearerToken) {
