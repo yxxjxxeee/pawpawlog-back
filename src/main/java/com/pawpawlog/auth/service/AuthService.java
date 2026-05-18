@@ -18,14 +18,14 @@ public class AuthService {
 
   @Value("${jwt.refresh-expiration}")
   private long refreshExpiration;
-
   private final JwtTokenProvider jwtTokenProvider;
   private final RedisDao redisDao;
 
   public TokenResponse issueTokenForAuth(Authentication authentication) {
     JwtToken tokenPair = jwtTokenProvider.generateToken(authentication);
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    redisDao.saveRefreshToken(String.valueOf(userDetails.getUserId()), tokenPair.refreshToken(), refreshExpiration);
+    redisDao.saveRefreshToken(String.valueOf(userDetails.getUserId()), tokenPair.refreshToken(),
+        refreshExpiration);
     return TokenResponse.from(tokenPair);
   }
 
