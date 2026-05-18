@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (jwtTokenProvider.validateToken(token)) {
           Authentication authentication = jwtTokenProvider.getAuthentication(token);
           SecurityContextHolder.getContext().setAuthentication(authentication);
-          log.debug("Security Context 인증 저장 완료. id: {}", authentication.getName());
+          log.debug("Security Context 인증 저장 완료: id={}", authentication.getName());
         }
       } catch (CustomException e) {
         request.setAttribute("exception", e);

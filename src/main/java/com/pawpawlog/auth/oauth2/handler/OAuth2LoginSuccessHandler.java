@@ -37,7 +37,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         .queryParam("refreshToken", tokenResponse.refreshToken())
         .build().toUriString();
 
-    log.debug("OAuth2 로그인 성공 - userId: {}", userId);
+    log.debug("OAuth2 로그인 성공: userId={}", userId);
 
     getRedirectStrategy().sendRedirect(request, response, targetUrl);
   }
