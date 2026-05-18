@@ -1,5 +1,6 @@
 package com.pawpawlog.auth.oauth2;
 
+import com.pawpawlog.auth.oauth2.userinfo.GoogleOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.KakaoOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.NaverOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.OAuth2UserInfo;
@@ -38,6 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
   private OAuth2UserInfo resolveUserInfo(String registrationId, Map<String, Object> attributes) {
     return switch (registrationId) {
+      case "google" -> new GoogleOAuth2UserInfo(attributes);
       case "kakao" -> new KakaoOAuth2UserInfo(attributes);
       case "naver" -> new NaverOAuth2UserInfo(attributes);
       default -> throw new OAuth2AuthenticationException(
@@ -58,8 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
   private User createUser(OAuth2UserInfo userInfo) {
-    log.debug("신규 OAuth2 유저 생성 - provider: {}, providerId: {}",
-        userInfo.getProvider(), userInfo.getProviderId());
+    log.debug("신규 OAuth2 유저 생성: provider={}, providerId={}", userInfo.getProvider(), userInfo.getProviderId());
     return userService.registerOAuth2User(
         userInfo.getNicknameOrDefault(),
         userInfo.getProvider(),
