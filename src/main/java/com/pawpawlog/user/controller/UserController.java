@@ -36,8 +36,7 @@ public class UserController {
   @GetMapping("/usernames/{username}")
   public ResponseEntity<UsernameAvailabilityResponse> checkUsernameAvailability(
       @PathVariable String username) {
-    return ResponseEntity.ok(
-        UsernameAvailabilityResponse.from(userService.existsByUsername(username)));
+    return ResponseEntity.ok(userService.checkUsernameAvailability(username));
   }
 
   @Operation(summary = "회원가입", description = "username / password / nickname으로 신규 계정을 생성합니다.")

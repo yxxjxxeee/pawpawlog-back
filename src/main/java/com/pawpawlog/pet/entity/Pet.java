@@ -40,7 +40,7 @@ public class Pet extends BaseEntity {
   @Column(nullable = false, length = 20)
   private PetType petType;
 
-  @Column(nullable = false, length = 50)
+  @Column(length = 50)
   private String name;
 
   private LocalDate birthDate;
@@ -57,7 +57,7 @@ public class Pet extends BaseEntity {
     this.birthDate = birthDate;
   }
 
-  public void setCurrent(boolean isCurrent) {
+  public void updateCurrent(boolean isCurrent) {
     this.isCurrent = isCurrent;
   }
 }

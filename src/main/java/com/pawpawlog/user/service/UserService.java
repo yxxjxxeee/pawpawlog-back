@@ -4,6 +4,7 @@ import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
 import com.pawpawlog.user.dto.request.SignUpRequest;
 import com.pawpawlog.user.dto.response.UserResponse;
+import com.pawpawlog.user.dto.response.UsernameAvailabilityResponse;
 import com.pawpawlog.user.entity.Provider;
 import com.pawpawlog.user.entity.User;
 import com.pawpawlog.user.repository.UserRepository;
@@ -21,8 +22,8 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public boolean existsByUsername(String username) {
-    return userRepository.existsByUsername(username);
+  public UsernameAvailabilityResponse checkUsernameAvailability(String username) {
+    return UsernameAvailabilityResponse.from(userRepository.existsByUsername(username));
   }
 
   public Optional<User> findByProviderAndProviderId(Provider provider, String providerId) {

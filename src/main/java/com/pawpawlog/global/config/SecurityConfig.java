@@ -32,9 +32,9 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  public static final String[] WHITE_LIST = {
+  private static final String[] WHITE_LIST = {
       "/auth/login", "/auth/reissue", "/auth/logout",
-      "/users", "/users/usernames/*", "/health",
+      "/health",
       "/swagger-ui/**", "/v3/api-docs/**",
       "/oauth2/**", "/login/oauth2/**"
   };
@@ -65,7 +65,7 @@ public class SecurityConfig {
         authenticationManager, authService, objectMapper);
 
     JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
-        jwtTokenProvider, redisDao, objectMapper);
+        jwtTokenProvider, redisDao, objectMapper, WHITE_LIST);
 
     http
         .csrf(AbstractHttpConfigurer::disable)
@@ -74,7 +74,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth ->
             auth
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/reissue", "/auth/logout",
-                    "/users").permitAll()
+                    "/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users/usernames/*", "/health").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**",
                     "/login/oauth2/**").permitAll()
