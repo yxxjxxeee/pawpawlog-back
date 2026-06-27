@@ -65,9 +65,6 @@ public class PetService {
     User user = getUser(userId);
     Pet pet = petRepository.findByIdAndUser(petId, user)
         .orElseThrow(() -> new CustomException(ErrorCode.PET_NOT_FOUND));
-    if (request.name() == null && request.birthDate() == null) {
-      throw new CustomException(ErrorCode.INVALID_INPUT);
-    }
     if (request.name() != null) {
       pet.updateName(request.name());
     }
