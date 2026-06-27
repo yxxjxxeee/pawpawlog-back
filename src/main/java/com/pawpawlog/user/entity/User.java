@@ -82,7 +82,6 @@ public class User extends BaseEntity {
     this.profileImageUrl = profileImageUrl;
   }
 
-  // equals & hashCode
   @Override
   public boolean equals(Object o) {
     if (this == o) {

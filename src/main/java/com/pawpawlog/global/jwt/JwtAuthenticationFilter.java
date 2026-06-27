@@ -1,6 +1,5 @@
 package com.pawpawlog.global.jwt;
 
-import com.pawpawlog.global.config.SecurityConfig;
 import com.pawpawlog.global.exception.CustomException;
 import com.pawpawlog.global.exception.ErrorCode;
 import com.pawpawlog.global.redis.RedisDao;
@@ -27,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtTokenProvider jwtTokenProvider;
   private final RedisDao redisDao;
   private final ObjectMapper objectMapper;
+  private final String[] whiteList;
 
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getServletPath();
-    return Arrays.stream(SecurityConfig.WHITE_LIST)
+    return Arrays.stream(whiteList)
         .anyMatch(pattern -> pathMatcher.match(pattern, path));
   }
 

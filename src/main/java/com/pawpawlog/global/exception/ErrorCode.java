@@ -11,6 +11,11 @@ public enum ErrorCode {
   DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다."),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
 
+  // Pet
+  PET_NOT_FOUND(HttpStatus.NOT_FOUND, "반려동물을 찾을 수 없습니다."),
+  PET_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "반려동물은 최대 5마리까지 등록할 수 있습니다."),
+  PET_IS_CURRENT(HttpStatus.BAD_REQUEST, "대표 반려동물은 삭제할 수 없습니다. 다른 반려동물을 대표로 지정해주세요."),
+
   // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
   FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
