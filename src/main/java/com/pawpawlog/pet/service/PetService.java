@@ -34,8 +34,6 @@ public class PetService {
     Pet pet = Pet.builder()
         .user(user)
         .petType(request.petType())
-        .name(request.name())
-        .birthDate(request.birthDate())
         .isCurrent(count == 0)
         .build();
     return PetResponse.from(petRepository.save(pet));
