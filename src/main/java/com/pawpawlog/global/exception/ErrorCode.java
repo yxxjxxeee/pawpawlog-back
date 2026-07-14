@@ -16,6 +16,10 @@ public enum ErrorCode {
   PET_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "반려동물은 최대 5마리까지 등록할 수 있습니다."),
   PET_IS_CURRENT(HttpStatus.BAD_REQUEST, "대표 반려동물은 삭제할 수 없습니다. 다른 반려동물을 대표로 지정해주세요."),
 
+  // Diary
+  DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "다이어리를 찾을 수 없습니다."),
+  DIARY_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 날짜에 이미 기록이 존재합니다."),
+
   // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
   FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),

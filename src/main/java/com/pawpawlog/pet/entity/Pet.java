@@ -1,7 +1,9 @@
 package com.pawpawlog.pet.entity;
 
+import com.pawpawlog.diary.entity.Diary;
 import com.pawpawlog.global.domain.BaseEntity;
 import com.pawpawlog.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,8 +14,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +53,10 @@ public class Pet extends BaseEntity {
   @Column(nullable = false)
   @Builder.Default
   private boolean isCurrent = false;
+
+  @OneToMany(mappedBy = "pet", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  @Builder.Default
+  private List<Diary> diaries = new ArrayList<>();
 
   public void updateName(String name) {
     this.name = name;
