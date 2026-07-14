@@ -20,6 +20,8 @@ spring:
 
   jackson:
     time-zone: Asia/Seoul
+    deserialization:
+      fail-on-unknown-properties: true
 
   data:
     redis:
