@@ -35,6 +35,15 @@ public class AuthService {
     return TokenResponse.from(tokenPair);
   }
 
+  public TokenResponse exchangeOAuth2Code(String code) {
+    String userId = redisDao.getUserIdByOAuth2Code(code);
+    if (userId == null) {
+      throw new CustomException(ErrorCode.OAUTH2_CODE_INVALID);
+    }
+    redisDao.deleteOAuth2Code(code);
+    return issueTokenForUser(userId);
+  }
+
   public TokenResponse reissue(String refreshToken) {
     String id = jwtTokenProvider.validateRefreshTokenAndGetId(refreshToken);
 

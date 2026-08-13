@@ -1,11 +1,11 @@
 package com.pawpawlog.auth.oauth2.handler;
 
-import com.pawpawlog.auth.dto.response.TokenResponse;
 import com.pawpawlog.auth.oauth2.CustomOAuth2User;
-import com.pawpawlog.auth.service.AuthService;
+import com.pawpawlog.global.redis.RedisDao;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
   @Value("${app.oauth2.redirect-uri}")
   private String redirectUri;
 
-  private final AuthService authService;
+  @Value("${app.oauth2.code-expiration}")
+  private long codeExpirationMillis;
+
+  private final RedisDao redisDao;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -30,11 +33,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
     String userId = String.valueOf(oAuth2User.getUserId());
 
-    TokenResponse tokenResponse = authService.issueTokenForUser(userId);
+    String code = UUID.randomUUID().toString();
+    redisDao.saveOAuth2Code(code, userId, codeExpirationMillis);
 
     String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
-        .queryParam("accessToken", tokenResponse.accessToken())
-        .queryParam("refreshToken", tokenResponse.refreshToken())
+        .queryParam("code", code)
         .build().toUriString();
 
     log.debug("OAuth2 로그인 성공: userId={}", userId);

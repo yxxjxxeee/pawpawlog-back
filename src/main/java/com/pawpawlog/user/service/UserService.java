@@ -10,6 +10,7 @@ import com.pawpawlog.user.entity.User;
 import com.pawpawlog.user.repository.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,11 @@ public class UserService {
         .nickname(request.nickname())
         .build();
 
-    return UserResponse.from(userRepository.save(user));
+    try {
+      return UserResponse.from(userRepository.save(user));
+    } catch (DataIntegrityViolationException e) {
+      throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
+    }
   }
 
   @Transactional

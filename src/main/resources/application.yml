@@ -20,6 +20,8 @@ spring:
 
   jackson:
     time-zone: Asia/Seoul
+    deserialization:
+      fail-on-unknown-properties: true
 
   data:
     redis:
@@ -77,3 +79,4 @@ jwt:
 app:
   oauth2:
     redirect-uri: ${OAUTH2_REDIRECT_URI}
+    code-expiration: ${OAUTH2_CODE_EXPIRATION:60000}

@@ -16,9 +16,16 @@ public enum ErrorCode {
   PET_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "반려동물은 최대 5마리까지 등록할 수 있습니다."),
   PET_IS_CURRENT(HttpStatus.BAD_REQUEST, "대표 반려동물은 삭제할 수 없습니다. 다른 반려동물을 대표로 지정해주세요."),
 
+  // Diary
+  DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "다이어리를 찾을 수 없습니다."),
+  DIARY_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 날짜에 이미 기록이 존재합니다."),
+
   // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
   FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+  ACCOUNT_SUSPENDED(HttpStatus.UNAUTHORIZED, "정지된 계정입니다."),
+  ACCOUNT_DELETED(HttpStatus.UNAUTHORIZED, "탈퇴한 계정입니다."),
+  OAUTH2_CODE_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않거나 만료된 인증 코드입니다."),
 
   // Token
   MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
@@ -28,6 +35,7 @@ public enum ErrorCode {
   // Request
   INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
   NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
+  DATA_CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 데이터입니다."),
 
   // Server
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");

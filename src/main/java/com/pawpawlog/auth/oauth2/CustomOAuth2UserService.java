@@ -4,7 +4,9 @@ import com.pawpawlog.auth.oauth2.userinfo.GoogleOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.KakaoOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.NaverOAuth2UserInfo;
 import com.pawpawlog.auth.oauth2.userinfo.OAuth2UserInfo;
+import com.pawpawlog.global.exception.ErrorCode;
 import com.pawpawlog.user.entity.User;
+import com.pawpawlog.user.entity.UserStatus;
 import com.pawpawlog.user.service.UserService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -53,10 +55,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   private User saveOrUpdate(OAuth2UserInfo userInfo) {
     return userService.findByProviderAndProviderId(userInfo.getProvider(), userInfo.getProviderId())
         .map(user -> {
+          validateActive(user);
           user.updateProfileImage(userInfo.getProfileImageUrl());
           return user;
         })
         .orElseGet(() -> createUser(userInfo));
+  }
+
+  private void validateActive(User user) {
+    if (user.getStatus() == UserStatus.SUSPENDED) {
+      throw new OAuth2AuthenticationException(
+          new OAuth2Error("account_suspended", ErrorCode.ACCOUNT_SUSPENDED.getMessage(), null));
+    }
+    if (user.getStatus() == UserStatus.DELETED) {
+      throw new OAuth2AuthenticationException(
+          new OAuth2Error("account_deleted", ErrorCode.ACCOUNT_DELETED.getMessage(), null));
+    }
   }
 
   private User createUser(OAuth2UserInfo userInfo) {

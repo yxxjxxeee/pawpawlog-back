@@ -60,7 +60,13 @@ public class JwtTokenProvider {
   }
 
   public JwtToken generateTokenForUserId(String id) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(id);
+    CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(id);
+    if (!userDetails.isAccountNonLocked()) {
+      throw new CustomException(ErrorCode.ACCOUNT_SUSPENDED);
+    }
+    if (!userDetails.isEnabled()) {
+      throw new CustomException(ErrorCode.ACCOUNT_DELETED);
+    }
     String authorities = extractAuthorities(userDetails.getAuthorities());
     return createTokenPair(id, authorities);
   }
@@ -88,10 +94,10 @@ public class JwtTokenProvider {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
       return true;
     } catch (ExpiredJwtException e) {
-      log.error("Expired JWT Token");
+      log.error("만료된 JWT 토큰");
       throw new CustomException(ErrorCode.EXPIRED_TOKEN);
     } catch (JwtException | IllegalArgumentException e) {
-      log.error("Invalid JWT Token: {}", e.getMessage());
+      log.error("유효하지 않은 JWT 토큰: {}", e.getMessage());
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
   }
@@ -101,7 +107,7 @@ public class JwtTokenProvider {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
     } catch (ExpiredJwtException ignored) {
     } catch (JwtException | IllegalArgumentException e) {
-      log.error("Invalid JWT Token on logout: {}", e.getMessage());
+      log.error("로그아웃 시 유효하지 않은 JWT 토큰: {}", e.getMessage());
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
   }
