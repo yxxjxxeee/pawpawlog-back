@@ -60,7 +60,13 @@ public class JwtTokenProvider {
   }
 
   public JwtToken generateTokenForUserId(String id) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(id);
+    CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(id);
+    if (!userDetails.isAccountNonLocked()) {
+      throw new CustomException(ErrorCode.ACCOUNT_SUSPENDED);
+    }
+    if (!userDetails.isEnabled()) {
+      throw new CustomException(ErrorCode.ACCOUNT_DELETED);
+    }
     String authorities = extractAuthorities(userDetails.getAuthorities());
     return createTokenPair(id, authorities);
   }

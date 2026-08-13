@@ -1,5 +1,6 @@
 package com.pawpawlog.auth.controller;
 
+import com.pawpawlog.auth.dto.request.OAuth2CodeExchangeRequest;
 import com.pawpawlog.auth.dto.response.TokenResponse;
 import com.pawpawlog.auth.service.AuthService;
 import com.pawpawlog.global.exception.CustomException;
@@ -12,10 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +32,21 @@ public class AuthController {
   private static final String BEARER_PREFIX = "Bearer ";
 
   private final AuthService authService;
+
+  @Operation(summary = "OAuth2 토큰 교환", description = "OAuth2 로그인 콜백에서 받은 1회용 코드를 액세스 / 리프레시 토큰으로 교환합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "교환 성공",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = TokenResponse.class))),
+      @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 코드",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  @PostMapping("/oauth2/token")
+  public ResponseEntity<TokenResponse> exchangeOAuth2Code(
+      @RequestBody @Valid OAuth2CodeExchangeRequest request) {
+    return ResponseEntity.ok(authService.exchangeOAuth2Code(request.code()));
+  }
 
   @SecurityRequirement(name = "BearerAuth")
   @Operation(summary = "토큰 재발급", description = "리프레시 토큰으로 액세스 / 리프레시 토큰을 재발급합니다.")

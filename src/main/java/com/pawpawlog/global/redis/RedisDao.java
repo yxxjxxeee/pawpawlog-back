@@ -12,6 +12,7 @@ public class RedisDao {
 
   private static final String REFRESH_TOKEN_PREFIX = "refreshToken:";
   private static final String BLACKLIST_PREFIX = "blacklist:";
+  private static final String OAUTH2_CODE_PREFIX = "oauth2Code:";
 
   private final RedisTemplate<String, Object> redisTemplate;
 
@@ -38,5 +39,19 @@ public class RedisDao {
   public boolean isBlacklisted(String accessToken) {
     String tokenHash = DigestUtils.md5DigestAsHex(accessToken.getBytes());
     return Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + tokenHash));
+  }
+
+  public void saveOAuth2Code(String code, String userId, long expirationMillis) {
+    redisTemplate.opsForValue()
+        .set(OAUTH2_CODE_PREFIX + code, userId, expirationMillis, TimeUnit.MILLISECONDS);
+  }
+
+  public String getUserIdByOAuth2Code(String code) {
+    Object value = redisTemplate.opsForValue().get(OAUTH2_CODE_PREFIX + code);
+    return value != null ? value.toString() : null;
+  }
+
+  public void deleteOAuth2Code(String code) {
+    redisTemplate.delete(OAUTH2_CODE_PREFIX + code);
   }
 }

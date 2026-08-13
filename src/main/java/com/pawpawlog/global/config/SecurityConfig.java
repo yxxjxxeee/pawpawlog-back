@@ -35,7 +35,7 @@ import tools.jackson.databind.ObjectMapper;
 public class SecurityConfig {
 
   private static final String[] WHITE_LIST = {
-      "/auth/login", "/auth/reissue", "/auth/logout",
+      "/auth/login", "/auth/reissue", "/auth/logout", "/auth/oauth2/token",
       "/health",
       "/swagger-ui/**", "/v3/api-docs/**",
       "/oauth2/**", "/login/oauth2/**"
@@ -78,7 +78,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth ->
             auth
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/reissue", "/auth/logout",
-                    "/users", "/").permitAll()
+                    "/auth/oauth2/token", "/users", "/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users/usernames/*", "/health").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**",
                     "/login/oauth2/**").permitAll()

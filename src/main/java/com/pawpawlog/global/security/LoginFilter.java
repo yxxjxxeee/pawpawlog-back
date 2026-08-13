@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -76,6 +78,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       HttpServletResponse response,
       AuthenticationException failed) throws IOException {
     log.warn("로그인 실패: {}", failed.getMessage());
-    HttpResponseUtil.writeErrorResponse(response, ErrorCode.UNAUTHORIZED, objectMapper);
+    HttpResponseUtil.writeErrorResponse(response, resolveErrorCode(failed), objectMapper);
+  }
+
+  private ErrorCode resolveErrorCode(AuthenticationException failed) {
+    if (failed instanceof AuthenticationServiceException) {
+      return ErrorCode.INVALID_INPUT;
+    }
+    if (failed instanceof LockedException) {
+      return ErrorCode.ACCOUNT_SUSPENDED;
+    }
+    if (failed instanceof DisabledException) {
+      return ErrorCode.ACCOUNT_DELETED;
+    }
+    return ErrorCode.UNAUTHORIZED;
   }
 }

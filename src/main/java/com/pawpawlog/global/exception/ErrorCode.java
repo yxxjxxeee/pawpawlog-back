@@ -23,6 +23,9 @@ public enum ErrorCode {
   // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
   FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+  ACCOUNT_SUSPENDED(HttpStatus.UNAUTHORIZED, "정지된 계정입니다."),
+  ACCOUNT_DELETED(HttpStatus.UNAUTHORIZED, "탈퇴한 계정입니다."),
+  OAUTH2_CODE_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않거나 만료된 인증 코드입니다."),
 
   // Token
   MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
