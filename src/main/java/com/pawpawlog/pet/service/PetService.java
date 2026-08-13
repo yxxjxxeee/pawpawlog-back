@@ -26,7 +26,7 @@ public class PetService {
 
   @Transactional
   public PetResponse register(Long userId, PetCreateRequest request) {
-    User user = getUser(userId);
+    User user = getUserForUpdate(userId);
     long count = petRepository.countByUser(user);
     if (count >= MAX_PET_COUNT) {
       throw new CustomException(ErrorCode.PET_LIMIT_EXCEEDED);
@@ -48,7 +48,7 @@ public class PetService {
 
   @Transactional
   public PetResponse designateCurrent(Long userId, Long petId) {
-    User user = getUser(userId);
+    User user = getUserForUpdate(userId);
     Pet target = petRepository.findByIdAndUser(petId, user)
         .orElseThrow(() -> new CustomException(ErrorCode.PET_NOT_FOUND));
     petRepository.findAllByUser(user).stream()
@@ -85,6 +85,11 @@ public class PetService {
 
   private User getUser(Long userId) {
     return userRepository.findById(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  private User getUserForUpdate(Long userId) {
+    return userRepository.findByIdForUpdate(userId)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
   }
 }

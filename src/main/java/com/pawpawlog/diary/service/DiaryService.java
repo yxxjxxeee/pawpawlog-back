@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,11 @@ public class DiaryService {
         .content(request.content())
         .emotion(request.emotion())
         .build();
-    return DiaryResponse.from(diaryRepository.save(diary));
+    try {
+      return DiaryResponse.from(diaryRepository.save(diary));
+    } catch (DataIntegrityViolationException e) {
+      throw new CustomException(ErrorCode.DIARY_ALREADY_EXISTS);
+    }
   }
 
   public List<DiaryResponse> getMonthly(Long userId, Long petId, YearMonth month) {

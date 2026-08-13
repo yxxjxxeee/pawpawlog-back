@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -84,6 +85,16 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
     ErrorCode errorCode = ErrorCode.NOT_FOUND;
     log.warn("존재하지 않는 리소스 요청: {}", e.getMessage());
+    return ResponseEntity
+        .status(errorCode.getStatus())
+        .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage()));
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  protected ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+      DataIntegrityViolationException e) {
+    ErrorCode errorCode = ErrorCode.DATA_CONFLICT;
+    log.warn("데이터 무결성 제약 위반: {}", e.getMessage());
     return ResponseEntity
         .status(errorCode.getStatus())
         .body(ErrorResponse.error(errorCode.name(), errorCode.getMessage()));
